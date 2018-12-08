@@ -19,29 +19,43 @@ func main() {
 }
 
 func partOne(input string) int {
-	// Parse input
-	codeStrings := strings.Fields(input)
-	codes := make([]int, len(codeStrings))
-	for i, code := range codeStrings {
-		codes[i], _ = strconv.Atoi(code)
-	}
+	codes := parseInputToDigitList(input)
 
 	_, sumMetadata := parseNode(codes)
 
 	return sumMetadata
 }
 
+func parseInputToDigitList(input string) []int {
+	codeStrings := strings.Fields(input)
+	codes := make([]int, len(codeStrings))
+	for i, code := range codeStrings {
+		codes[i], _ = strconv.Atoi(code)
+	}
+	return codes
+}
+
 func parseNode(input []int) (int, int) {
 	metadataSum := 0
+
+	// Parse Header
 	quantChildNodes := input[0]
 	quantMetaEntries := input[1]
+
+	// Keep a marker for how far we are in the input slice
 	marker := 2
+
+	// Loop over all the childs
 	for iChild := 1; iChild <= quantChildNodes; iChild++ {
+		// First we parse the child (recursion), we pass the unreaded part of the input
 		childMarker, childMetadataSum := parseNode(input[marker:])
 		metadataSum += childMetadataSum
+
+		// Advance the marker by the childlength
 		marker += childMarker
 	}
 
+	// Parse metadata
 	for iMeta := 0; iMeta < quantMetaEntries; iMeta++ {
 		metadataSum += input[marker+iMeta]
 	}
@@ -49,18 +63,10 @@ func parseNode(input []int) (int, int) {
 	return marker+quantMetaEntries, metadataSum
 }
 
-
 func partTwo(input string) int {
-	// Parse input
-	codeStrings := strings.Fields(input)
-	codes := make([]int, len(codeStrings))
-	for i, code := range codeStrings {
-		codes[i], _ = strconv.Atoi(code)
-	}
-
-	_, sumMetadata := parseNode2(codes)
-
-	return sumMetadata
+	codes := parseInputToDigitList(input)
+	_, rootNodeScore := parseNode2(codes)
+	return rootNodeScore
 }
 
 func parseNode2(input []int) (int, int) {
